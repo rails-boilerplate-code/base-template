@@ -1,2 +1,3 @@
-# base-template
-This is the base application template used for BoilerplateCode.com
+# Base Rails Application Template
+from [BoilerplateCode.com](https://boilerplate.com)
+
