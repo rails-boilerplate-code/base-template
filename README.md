@@ -18,6 +18,11 @@ Simply add business value that customers will pay for.
 
 #### Prerequisites
 
+It's assumed that you've used `Rails` before. You 
+[don't need to be an expert](https://guides.rubyonrails.org/),
+you could have just learned the framework, but you've setup
+`Rails` on you local computer before and have a basic understanding of how it works.
+
 * Make sure you have Git installed `git --version`
 
 * Make sure you have Ruby installed `ruby -v`

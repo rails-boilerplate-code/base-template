@@ -54,7 +54,8 @@ after_bundle do
   generate(:controller, "Home", "index")
   route "root to: 'home#index'"
 
-  inject_into_file("app/controllers/home_controller.rb", after: "class HomeController < ApplicationController\n") do
+  matcher = "class HomeController < ApplicationController\n"
+  inject_into_file("app/controllers/home_controller.rb", after: "#{matcher}") do
     <<~"RUBY"
       skip_before_action :authenticate_user!
     RUBY
