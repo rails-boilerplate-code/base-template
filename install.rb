@@ -27,6 +27,7 @@ after_bundle do
 
   stripe_test_secret_key = ask("What is your Stripe Test Secret Key?")
   stripe_test_publish_key = ask("What is your Stripe Test Publishable Key?")
+
   run("echo 'STRIPE_SECRET_KEY=#{stripe_test_secret_key}' >> .env")
   run("echo 'STRIPE_PUBLISHABLE_KEY=#{stripe_test_publish_key}' >> .env")
 
