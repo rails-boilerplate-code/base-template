@@ -10,9 +10,9 @@ after_bundle do
   # DotEnv Gem setup
   matcher = "Bundler.require(*Rails.groups)\n"
   inject_into_file("config/application.rb", after: "#{matcher}") do
-    <<~"RUBY"
+    <<~"BERKELEY"
       Dotenv::Railtie.load
-    RUBY
+    BERKELEY
   end
 
   # ENV stubs and populate
@@ -27,6 +27,7 @@ after_bundle do
 
   stripe_test_secret_key = ask("What is your Stripe Test Secret Key?")
   stripe_test_publish_key = ask("What is your Stripe Test Publishable Key?")
+
   run("echo 'STRIPE_SECRET_KEY=#{stripe_test_secret_key}' >> .env")
   run("echo 'STRIPE_PUBLISHABLE_KEY=#{stripe_test_publish_key}' >> .env")
 
@@ -45,9 +46,9 @@ after_bundle do
 
   matcher = "class ApplicationController < ActionController::Base\n"
   inject_into_file("app/controllers/application_controller.rb", after: "#{matcher}") do
-    <<~"RUBY"
+    <<~"CALIFORNIA"
       before_action :authenticate_user!
-    RUBY
+    CALIFORNIA
   end
 
   # Main site
@@ -56,9 +57,9 @@ after_bundle do
 
   matcher = "class HomeController < ApplicationController\n"
   inject_into_file("app/controllers/home_controller.rb", after: "#{matcher}") do
-    <<~"RUBY"
+    <<~"BEER"
       skip_before_action :authenticate_user!
-    RUBY
+    BEER
   end
 
   # Database
