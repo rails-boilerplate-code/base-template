@@ -7,6 +7,9 @@ end
 
 after_bundle do
 
+  # Setup
+  current_path = File.expand_path(File.dirname(__FILE__))
+
   # DotEnv Gem setup
   matcher = "Bundler.require(*Rails.groups)\n"
   inject_into_file("config/application.rb", after: "#{matcher}") do
@@ -35,15 +38,13 @@ after_bundle do
   puts "\n\n"
 
   # Stripe payments
-  initializer 'stripe.rb', <<-CODE
+  initializer 'stripe.rb', <<-HEREDOC
     Stripe.api_key = ENV["STRIPE_SECRET_KEY"]
-  CODE
+  HEREDOC
 
   # Devise authentication
   generate("devise:install")
   environment 'config.action_mailer.default_url_options = { host: "localhost", port: 3000 }', env: 'development'
-  generate("devise User")
-
   matcher = "class ApplicationController < ActionController::Base\n"
   inject_into_file("app/controllers/application_controller.rb", after: "#{matcher}") do
     <<~"CALIFORNIA"
@@ -51,25 +52,32 @@ after_bundle do
     CALIFORNIA
   end
 
+  # Devise users
+  generate("devise User")
+  path = "app/controllers/users"
+  file = "registrations_controller.rb"
+  run("mkdir -p #{path}")
+  run("cp #{current_path}/../base-template/files/#{path}/#{file} #{path}/#{file}")
+  gsub_file 'config/routes.rb', "devise_for :users", ""
+  route('devise_for :users, controllers: { registrations: "users/registrations" }')
+
   # Main site
   generate(:controller, "Home", "index")
   route "root to: 'home#index'"
+  gsub_file 'config/routes.rb', "get 'home/index'", ""
 
-  matcher = "class HomeController < ApplicationController\n"
-  inject_into_file("app/controllers/home_controller.rb", after: "#{matcher}") do
-    <<~"BEER"
-      skip_before_action :authenticate_user!
-    BEER
-  end
+  # Member Dashboard
+  generate(:controller, "Dashboard", "index")
+  route "get :dashboard, to: 'dashboard#index'"
+  gsub_file 'config/routes.rb', "get 'dashboard/index'", ""
 
   # Database
   rails_command("db:migrate")
 
   # Rubocop
-  path = File.expand_path(File.dirname(__FILE__))
-  file = File.open("#{path}/files/.rubocop.yml", "r+")
-  run("echo #{file} >> .rubocop.yml")
-  run("bundle exec rubocop -a")
+  rubocop_path = "#{current_path}/../base-template/files/.rubocop.yml"
+  run("cp #{rubocop_path} ./.rubocop.yml")
+  # run("bundle exec rubocop -a")
 
   # Git
   git :init
