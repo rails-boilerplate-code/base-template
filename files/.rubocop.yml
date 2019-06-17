@@ -2608,7 +2608,7 @@ Style/EmptyMethod:
   StyleGuide: '#no-single-line-methods'
   Enabled: true
   VersionAdded: '0.46'
-  EnforcedStyle: compact
+  EnforcedStyle: expanded
   SupportedStyles:
     - compact
     - expanded
@@ -3516,7 +3516,7 @@ Style/SingleLineMethods:
   Enabled: true
   VersionAdded: '0.9'
   VersionChanged: '0.19'
-  AllowIfMethodIsEmpty: false
+  AllowIfMethodIsEmpty: true
 
 Style/SpecialGlobalVars:
   Description: 'Avoid Perl-style global variables.'

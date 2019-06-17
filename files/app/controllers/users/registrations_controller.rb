@@ -13,28 +13,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     super do |resource|
 
-      resource.create_stripe(params)
-
-      # resource.create_customer(params[:stripe_token], params[:user][:email])
-      # resource.stripe_token = params[:stripe_token]
-
-      # if params[:user][:pro] == "true"
-      #   # plan_per_month_49 = 'plan_EwVQly9FL4X04W' # test
-      #   plan_per_month_49 = 'plan_FEVxZLrZi57Mt6' #live
-      #   resource.create_subscription(plan_per_month_49)
-      #   resource.total_searches = 2000
-      #   resource.plan_pro = true
-      # else
-      #   # plan_per_month_29 = 'plan_FCzyMMdsyW5Bff' # test
-      #   plan_per_month_29 = 'plan_FEVwkrgnFAFUyh' #live
-      #   resource.create_subscription(plan_per_month_29)
-      #   resource.total_searches = 500
-      #   resource.plan_individual = true
-      # end
-      #
-      # resource.current_searches = 0
-      # resource.searches_started_at = Date.today
-
+      resource.stripe_order(params)
       resource.save
 
       # if resource.save
