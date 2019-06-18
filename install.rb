@@ -41,6 +41,21 @@ after_bundle do
   puts "=~" * 40
   puts "\n\n"
 
+  # Bootstrap
+  path = "app/views/layouts/application.html.erb"
+  gsub_file path, "<%= stylesheet_link_tag    'application', media: 'all' %>", ""
+  gsub_file path, "<%= stylesheet_link_tag 'application', media: 'all' %>", ""
+
+  matcher = "</head>"
+  inject_into_file(path, before: "#{matcher}") do
+    <<~"HEREDOC"
+
+      <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,400i,500" rel="stylesheet">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <%= stylesheet_link_tag 'application', media: 'all' %>
+    HEREDOC
+  end
+
   # Stripe payments
   initializer 'stripe.rb', <<-HEREDOC
     Stripe.api_key = ENV["STRIPE_SECRET_KEY"]
@@ -107,23 +122,43 @@ after_bundle do
     HEREDOC
   end
 
+  path = "app/views/layouts/application.html.erb"
+  matcher = "<%= yield %>"
+  inject_into_file(path, before: matcher) do
+    <<~"HEREDOC"
+      
+      <p class="notice"><%= notice %></p>
+      <p class="alert"><%= alert %></p>
+
+    HEREDOC
+  end
+
   # Main site
   generate(:controller, "Home", "index")
   route "root to: 'home#index'"
   gsub_file 'config/routes.rb', "get 'home/index'", ""
 
-  matcher = "<%= yield %>\n"
-  inject_into_file("app/views/layouts/application.html.erb", after: "#{matcher}") do
-    <<-HEREDOC
-      <script src="https://js.stripe.com/v3/"></script>      
-      <%= yield :javascript %>
-    HEREDOC
-  end
-
   matcher = "class HomeController < ApplicationController\n"
   inject_into_file("app/controllers/home_controller.rb", after: "#{matcher}") do
     <<~"HEREDOC"
       skip_before_action :authenticate_user!
+    HEREDOC
+  end
+
+  # Javascripts
+  path = "app/views/layouts/application.html.erb"
+  gsub_file path, "<%= javascript_include_tag 'application' %>", ""
+  matcher = "</body>"
+  inject_into_file(path, before: "#{matcher}") do
+    <<~"HEREDOC"
+
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+      <%= javascript_include_tag 'application' %>
+      <script src="https://js.stripe.com/v3/"></script>
+      <%= yield :javascript %>
+
     HEREDOC
   end
 
