@@ -8,6 +8,7 @@ end
 after_bundle do
 
   # Setup
+  template = "default"
   current_path = File.expand_path(File.dirname(__FILE__))
 
   # DotEnv Gem setup
@@ -18,43 +19,18 @@ after_bundle do
     HEREDOC
   end
 
-  # ENV stubs and populate
+  # ENV stubs
   run("touch .env")
   run("echo .env >> .gitignore")
-
-  puts "\n\n"
-  puts "=~" * 40
-
-  puts "For details on how to find these keys go here:"
-  puts "<INSERT LINK TO VISUAL INSTRUCTIONS>\n" #TODO: insert link to instructions
-
-  stripe_test_secret_key = ask("What is your Stripe Test Secret Key?")
-  stripe_test_publish_key = ask("What is your Stripe Test Publishable Key?")
-  stripe_product_id = ask("What is your Stripe Product ID?")
-  stripe_sku_id = ask("What is your Stripe SKU ID?")
-
   run("echo 'STRIPE_SECRET_KEY=#{stripe_test_secret_key}' >> .env")
   run("echo 'STRIPE_PUBLISHABLE_KEY=#{stripe_test_publish_key}' >> .env")
   run("echo 'STRIPE_PRODUCT_ID=#{stripe_product_id}' >> .env")
   run("echo 'STRIPE_SKU_ID=#{stripe_sku_id}' >> .env")
-
-  puts "=~" * 40
-  puts "\n\n"
-
-  # Bootstrap
-  path = "app/views/layouts/application.html.erb"
-  gsub_file path, "<%= stylesheet_link_tag    'application', media: 'all' %>", ""
-  gsub_file path, "<%= stylesheet_link_tag 'application', media: 'all' %>", ""
-
-  matcher = "</head>"
-  inject_into_file(path, before: "#{matcher}") do
-    <<~"HEREDOC"
-
-      <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,400i,500" rel="stylesheet">
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-      <%= stylesheet_link_tag 'application', media: 'all' %>
-    HEREDOC
-  end
+  run("echo 'APP_NAME=#{@app_name.split("_").map(&:capitalize).join("")}' >> .env")
+  run("echo 'EMAIL=#{email_address}' >> .env")
+  run("echo 'SEND_GRID_USER=#{send_grid_user_name}' >> .env")
+  run("echo 'SEND_GRID_PASSWORD=#{send_grid_password}' >> .env")
+  run("echo 'SEND_GRID_DOMAIN=#{send_grid_domain}' >> .env")
 
   # Stripe payments
   initializer 'stripe.rb', <<-HEREDOC
@@ -63,7 +39,30 @@ after_bundle do
 
   # Devise authentication
   generate("devise:install")
-  environment 'config.action_mailer.default_url_options = { host: "localhost", port: 3000 }', env: 'development'
+
+  matcher = "Rails.application.configure do\n"
+  inject_into_file("config/environments/development.rb", after: "#{matcher}") do
+    <<~"HEREDOC"
+      # Email settings
+      config.action_mailer.perform_caching = false
+      config.action_mailer.perform_deliveries = true
+      config.action_mailer.raise_delivery_errors = true
+      config.action_mailer.delivery_method = :smtp
+      config.action_mailer.smtp_settings = {
+          user_name: "\#{ENV['SEND_GRID_USER']}",
+          password: "\#{ENV['SEND_GRID_PASSWORD']}",
+          domain: "\#{ENV['SEND_GRID_DOMAIN']}",
+          address: 'smtp.sendgrid.net',
+          port: '587',
+          authentication: :plain,
+          enable_starttls_auto: true
+      } 
+
+    HEREDOC
+  end
+
+  matcher = "'please-change-me-at-config-initializers-devise@example.com'"
+  gsub_file 'config/initializers/devise.rb', "#{matcher}", '"#{ENV[\'EMAIL\']}"'
 
   matcher = "class ApplicationController < ActionController::Base\n"
   inject_into_file("app/controllers/application_controller.rb", after: "#{matcher}") do
@@ -80,15 +79,11 @@ after_bundle do
   generate("devise User")
   generate("devise:views")
 
+  # TODO: remove from templates dir and instead inject this
   path = "app/controllers/users"
   file = "registrations_controller.rb"
   run("mkdir -p #{path}")
-  run("cp #{current_path}/../base-template/files/#{path}/#{file} #{path}/#{file}")
-
-  path = "app/views/devise/registrations"
-  file = "new.html.erb"
-  run("rm #{path}/#{file}")
-  run("cp #{current_path}/../base-template/files/#{path}/#{file} #{path}/#{file}")
+  run("cp #{current_path}/../base-template/templates/#{template}/#{path}/#{file} #{path}/#{file}")
 
   gsub_file 'config/routes.rb', "devise_for :users", ""
   route('devise_for :users, controllers: { registrations: "users/registrations" }')
@@ -122,42 +117,25 @@ after_bundle do
     HEREDOC
   end
 
-  path = "app/views/layouts/application.html.erb"
-  matcher = "<%= yield %>"
-  inject_into_file(path, before: matcher) do
-    <<~"HEREDOC"
-      
-      <p class="notice"><%= notice %></p>
-      <p class="alert"><%= alert %></p>
-
-    HEREDOC
-  end
-
-  # Main site
+  # Landing Page
   generate(:controller, "Home", "index")
   route "root to: 'home#index'"
   gsub_file 'config/routes.rb', "get 'home/index'", ""
-
   matcher = "class HomeController < ApplicationController\n"
   inject_into_file("app/controllers/home_controller.rb", after: "#{matcher}") do
     <<~"HEREDOC"
-      skip_before_action :authenticate_user!
+      skip_before_action :authenticate_user! 
+
     HEREDOC
   end
 
-  # Javascripts
-  path = "app/views/layouts/application.html.erb"
-  gsub_file path, "<%= javascript_include_tag 'application' %>", ""
-  matcher = "</body>"
-  inject_into_file(path, before: "#{matcher}") do
+  # Pricing Page
+  generate(:controller, "Pricing", "index")
+  route "get :pricing, to: 'pricing#index'"
+  matcher = "class PricingController < ApplicationController\n"
+  inject_into_file("app/controllers/pricing_controller.rb", after: "#{matcher}") do
     <<~"HEREDOC"
-
-      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-      <%= javascript_include_tag 'application' %>
-      <script src="https://js.stripe.com/v3/"></script>
-      <%= yield :javascript %>
+      skip_before_action :authenticate_user!
 
     HEREDOC
   end
@@ -171,8 +149,23 @@ after_bundle do
   generate(:migration, "AddStripeFieldsToUser stripe_customer:string:index stripe_order_id:string:index stripe_status:string")
   rails_command("db:migrate")
 
+  # Template
+  source = "#{current_path}/templates/#{template}/app/views"
+  destination = "#{current_path}/../#{@app_name}/app/views"
+  FileUtils.copy_entry source, destination, preserve = true
+
+  # Template Assets
+  source = "#{current_path}/templates/#{template}/app/assets"
+  destination = "#{current_path}/../#{@app_name}/app/assets"
+  FileUtils.copy_entry source, destination, preserve = true
+
+  # Template Licenses
+  source = "#{current_path}/templates/#{template}/licenses"
+  destination = "#{current_path}/../#{@app_name}/licenses"
+  FileUtils.copy_entry source, destination, preserve = true
+
   # Rubocop
-  rubocop_path = "#{current_path}/../base-template/files/.rubocop.yml"
+  rubocop_path = "#{current_path}/../base-template/templates/globals/.rubocop.yml"
   run("cp #{rubocop_path} ./.rubocop.yml")
   run("bundle exec rubocop -a")
 
@@ -180,4 +173,11 @@ after_bundle do
   git :init
   git add: "."
   git commit: %Q{ -m 'Initial commit generated via BoilerplateCode.com' }
+
+  # Done message
+  puts "\n\n"
+  puts "=~" * 40
+  puts "Done!"
+  puts "=~" * 40
+  puts "\n\n"
 end

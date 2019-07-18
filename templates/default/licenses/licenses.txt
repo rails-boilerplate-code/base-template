@@ -1,0 +1,36 @@
+--------------------------------------------------------------------
+logo-*.png
+
+Source:
+
+https://svgsilh.com/000000/image/971335.html
+
+License:
+
+https://creativecommons.org/publicdomain/zero/1.0/deed.en
+
+
+--------------------------------------------------------------------
+robot-kit-*.png
+
+Images found here:
+
+https://www.elabpeers.com/spider-robot.html
+https://www.elabpeers.com
+
+eLab Peers has some AMAZING kits and I would highly recommend you
+check that out if you have any interset at all in this stuff.
+
+You will NOT be disappointed!
+
+
+--------------------------------------------------------------------
+Front End Compentant Library
+
+Source:
+
+https://getbootstrap.com/
+
+License:
+
+https://github.com/twbs/bootstrap/blob/master/LICENSE

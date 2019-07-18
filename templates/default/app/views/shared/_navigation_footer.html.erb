@@ -1,0 +1,25 @@
+<div class="container border-top pt-3 small">
+  <div class="row">
+    <div class="col-10 offset-1 text-center text-muted">
+      &copy <%= Time.current.year %> <%= ENV["APP_NAME"] %>
+      </span>
+    </div>
+  </div>
+
+  <div class="row pt-0">
+    <div class="col-10 offset-1 text-center text-muted">
+      <%= link_to image_tag("logo-muted.png", width: "20px"), root_path %>
+      <%= link_to "home", root_path, class: "text-secondary" %> |
+      <% if user_signed_in? %>
+        <%= link_to "log out", destroy_user_session_path, method: :delete, class: "text-secondary" %> |
+      <% else %>
+        <%= link_to "log in", new_user_session_path, class: "text-secondary" %> |
+      <% end %>
+      <% if user_signed_in? %>
+        <%= link_to "dashboard", dashboard_path, class: "text-secondary" %>
+      <% else %>
+        <%= link_to "pricing", pricing_path, class: "text-secondary" %>
+      <% end %>
+    </div>
+  </div>
+</div>
