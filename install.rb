@@ -22,15 +22,15 @@ after_bundle do
   # ENV stubs
   run("touch .env")
   run("echo .env >> .gitignore")
-  run("echo 'STRIPE_SECRET_KEY=#{stripe_test_secret_key}' >> .env")
-  run("echo 'STRIPE_PUBLISHABLE_KEY=#{stripe_test_publish_key}' >> .env")
-  run("echo 'STRIPE_PRODUCT_ID=#{stripe_product_id}' >> .env")
-  run("echo 'STRIPE_SKU_ID=#{stripe_sku_id}' >> .env")
+  run("echo 'STRIPE_SECRET_KEY=' >> .env")
+  run("echo 'STRIPE_PUBLISHABLE_KEY=' >> .env")
+  run("echo 'STRIPE_PRODUCT_ID=' >> .env")
+  run("echo 'STRIPE_SKU_ID=' >> .env")
   run("echo 'APP_NAME=#{@app_name.split("_").map(&:capitalize).join("")}' >> .env")
-  run("echo 'EMAIL=#{email_address}' >> .env")
-  run("echo 'SEND_GRID_USER=#{send_grid_user_name}' >> .env")
-  run("echo 'SEND_GRID_PASSWORD=#{send_grid_password}' >> .env")
-  run("echo 'SEND_GRID_DOMAIN=#{send_grid_domain}' >> .env")
+  run("echo 'EMAIL=' >> .env")
+  run("echo 'SEND_GRID_USER=' >> .env")
+  run("echo 'SEND_GRID_PASSWORD=' >> .env")
+  run("echo 'SEND_GRID_DOMAIN=' >> .env")
 
   # Stripe payments
   initializer 'stripe.rb', <<-HEREDOC
