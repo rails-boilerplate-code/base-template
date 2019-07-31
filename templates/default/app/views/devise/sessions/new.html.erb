@@ -1,0 +1,36 @@
+<div class="row pt-5">
+  <div class="col-12 col-sm-6 offset-sm-3">
+    <div class="card">
+      <div class="card-body shadow pt-5">
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+
+          <div class="form-group">
+            <%= f.label :email %><br/>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control form-control-lg', required: true %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :password %><br/>
+            <%= f.password_field :password, autocomplete: "current-password", class: 'form-control form-control-lg', required: true %>
+          </div>
+
+          <% if devise_mapping.rememberable? -%>
+            <div class="custom-control custom-checkbox align-items-center">
+              <%= f.check_box :remember_me, checked: true, class: 'custom-control-input', id: 'check-remember' %>
+              <label class="custom-control-label text-small" for="check-remember">Remember me next time</label>
+            </div>
+          <% end -%>
+
+          <div class="text-center pt-5">
+            <%= f.submit "Log in", class: 'btn btn-lg btn-success' %>
+          </div>
+        <% end %>
+
+        <div class="pt-4 text-center">
+          <%= render "devise/shared/links" %>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

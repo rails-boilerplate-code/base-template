@@ -1,0 +1,9 @@
+<% if resource.errors.any? %>
+  <div>
+    <ul>
+      <% resource.errors.full_messages.each do |message| %>
+        <%= render partial: "shared/notifications", locals: { alert: message } %>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

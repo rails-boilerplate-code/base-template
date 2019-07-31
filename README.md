@@ -40,10 +40,6 @@ you could have just learned the framework, but you've setup
      
 #### Getting Started
 
-1. Go to [Stripe.com](https://stripe.com) and setup a free account. 
-You don't need to have your bank account linked yet, you'll be using "test" mode
-to get started.
-
 1. Clone this repo:
  
     * `git clone git@github.com:rails-boilerplate-code/base-template.git`
@@ -63,4 +59,19 @@ to get started.
         --skip-test
         ```   
         
-1. Follow the prompts and enter the information asked. 
+1. Go to [Stripe.com](https://stripe.com) and setup a free account. 
+   You don't need to have your bank account linked yet, you'll be using "test" mode
+   to get started.
+   
+   1. Make sure you're in TEST mode.
+   1. Collect your TEST secret key, and TEST publishable key.
+   1. Setup a Product and a SKU
+   1. Grab your newly created product id and the sku id.
+
+1. Go to your new Rails App directory and find the `.env` file, add all of the Stripe info from above.   
+
+1. Got to [SendGrid.com](https://sendgrid.com/) and setup a free account. You'll need your SendGrid User, Password, and Domain.
+
+1. Go to your new Rails App directory and find the `.env` file, add all of the SendGrid info from above.
+
+1. `rails s`   
