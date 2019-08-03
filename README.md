@@ -11,11 +11,40 @@ A simple Rails SaaS Framework for membership and billing.
 
 ##### Absolutely!
 
-I've already created the boring, time consuming, repetitive boilerplate code. 
+I've already created the boring, time consuming, repetitive boilerplate code with a fully Responsive (Mobile, Tablet, Desktop) landing page. 
 Simply add business value that customers will pay for.
 
 ---
 
+##### Desktop Landing Page:
+
+![Desktop Landing Page 1](public/default_template_screenshots/default-template-landing-page-01.png)
+
+![Desktop Landing Page 2](public/default_template_screenshots/default-template-landing-page-02.png)
+
+![Desktop Landing Page 3](public/default_template_screenshots/default-template-landing-page-03.png)
+
+##### Responsive Mobile Landing Page:
+
+![Responsive Mobile Landing Page](public/default_template_screenshots/default-template-responsive-mobile-01.png)
+
+##### Responsive Tablet Landing Page:
+
+![Responsive Tablet Landing Page](public/default_template_screenshots/default-template-responsive-tablets-01.png)
+
+##### Desktop Pricing Page:
+
+![Desktop Pricing Page](public/default_template_screenshots/default-template-pricing-page.png)
+
+##### Desktop Payment/Registration Page:
+
+![Desktop Payment/Registration Page](public/default_template_screenshots/default-template-payment-page.png)
+
+##### Desktop Paid Members Only Page:
+
+![Desktop Paid Members Only Page](public/default_template_screenshots/default-template-user-dashboard-page.png)
+
+---
 #### Prerequisites
 
 It's assumed that you've used `Rails` before. You 
